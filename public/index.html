@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0e0e10;color:#e0e0e0;min-height:100vh}
+a{color:#c026d3;text-decoration:none}
+a:hover{text-decoration:underline;color:#d946ef}
+.container{max-width:1400px;margin:0 auto;padding:32px 24px}
+h1{font-size:28px;font-weight:700;margin-bottom:4px}
+.subtitle{color:#888;font-size:14px;margin-bottom:20px}
+
+/* Tabs */
+.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid #2a2a2e}
+.tab{padding:10px 24px;font-size:14px;font-weight:600;color:#888;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab:hover{color:#e0e0e0}
+.tab.active{color:#c026d3;border-color:#c026d3}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Stats */
+.stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.stat{background:#1a1a1e;border-radius:10px;padding:16px 24px;min-width:140px;border:1px solid #2a2a2e}
+.stat .num{font-size:28px;font-weight:700;color:#c026d3}
+.stat .label{font-size:12px;color:#888;margin-top:2px}
+
+/* Search */
+.search{width:100%;padding:12px 16px;background:#1a1a1e;border:1px solid #2a2a2e;border-radius:8px;color:#e0e0e0;font-size:14px;margin-bottom:24px;font-family:'Inter',sans-serif}
+.search:focus{outline:none;border-color:#c026d3}
+.search::placeholder{color:#555}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #2a2a2e}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:#1a1a1e}
+th{padding:12px 14px;text-align:left;font-weight:600;color:#aaa;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #2a2a2e;white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid #1a1a1e;vertical-align:top}
+tr:hover td{background:#1a1a1e}
+tr:last-child td{border-bottom:none}
+.name{font-weight:600;color:#fff;white-space:nowrap}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-running{background:#16a34a22;color:#4ade80;border:1px solid #16a34a44}
+.badge-deployed{background:#2563eb22;color:#60a5fa;border:1px solid #2563eb44}
+.badge-stopped{background:#52525b22;color:#a1a1aa;border:1px solid #52525b44}
+.notes{max-width:220px;font-size:12px;color:#888;line-height:1.4}
+.stack{color:#a78bfa;font-size:12px}
+.mono{font-family:monospace;font-size:12px}
+
+/* Keys tab */
+.key-value{font-family:monospace;font-size:12px;color:#888;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;position:relative}
+.key-value:hover{color:#c026d3}
+.key-value.revealed{white-space:normal;word-break:break-all;color:#e0e0e0}
+.key-projects{display:flex;flex-wrap:wrap;gap:4px}
+.key-project-tag{background:#c026d322;color:#d946ef;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.key-service{background:#1a1a1e;color:#a78bfa;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid #2a2a2e}
+
+/* Add Key Form */
+.add-form{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:12px;padding:24px;margin-bottom:24px;display:none}
+.add-form.open{display:block}
+.add-form h3{font-size:16px;margin-bottom:16px;color:#fff}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#888;font-weight:600}
+.form-group input,.form-group textarea{background:#111114;border:1px solid #2a2a2e;border-radius:6px;padding:10px 12px;color:#e0e0e0;font-size:13px;font-family:'Inter',sans-serif}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:#c026d3}
+.form-group textarea{resize:vertical;height:60px}
+.form-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.btn{padding:8px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.btn-primary{background:#c026d3;color:#fff}
+.btn-primary:hover{background:#a020b0}
+.btn-secondary{background:#2a2a2e;color:#e0e0e0}
+.btn-secondary:hover{background:#333}
+.btn-danger{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+.btn-danger:hover{background:#ef444444}
+.btn-sm{padding:5px 12px;font-size:11px}
+.add-btn{margin-bottom:16px}
+
+/* Actions */
+.row-actions{display:flex;gap:6px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🚀 Project Hub</h1>
+<p class="subtitle">All projects built by Nole & Clawd</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('projects')">📁 Projects</div>
+  <div class="tab" onclick="switchTab('keys')">🔑 Keys & Tokens</div>
+</div>
+
+<!-- PROJECTS TAB -->
+<div class="tab-content active" id="tab-projects">
+  <div class="stats" id="stats"></div>
+  <input class="search" type="text" placeholder="Search projects..." id="search" oninput="renderProjects()">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Project</th><th>Description</th><th>Status</th><th>Local URL</th><th>Live URL</th><th>GitHub</th><th>Stack</th><th>Notes</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- KEYS TAB -->
+<div class="tab-content" id="tab-keys">
+  <div class="stats" id="key-stats"></div>
+  <button class="btn btn-primary add-btn" onclick="toggleAddForm()">+ Add Key</button>
+  <div class="add-form" id="add-form">
+    <h3 id="form-title">Add New Key</h3>
+    <input type="hidden" id="edit-id">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Name</label>
+        <input id="f-name" placeholder="e.g. OpenAI API Key">
+      </div>
+      <div class="form-group">
+        <label>Service</label>
+        <input id="f-service" placeholder="e.g. OpenAI, Vercel, GitHub">
+      </div>
+      <div class="form-group full">
+        <label>Key / Token</label>
+        <input id="f-key" placeholder="sk-... or ghp_... or hf_...">
+      </div>
+      <div class="form-group full">
+        <label>Linked Projects (comma-separated)</label>
+        <input id="f-projects" placeholder="OpenFlow, Voice Engine">
+      </div>
+      <div class="form-group full">
+        <label>Notes</label>
+        <textarea id="f-notes" placeholder="Expiry, scopes, account info..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="toggleAddForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveKey()">Save</button>
+    </div>
+  </div>
+  <input class="search" type="text" placeholder="Search keys..." id="key-search" oninput="renderKeys()">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Service</th><th>Key / Token</th><th>Linked Projects</th><th>Notes</th><th>Actions</th></tr></thead>
+      <tbody id="keys-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<script>
+// ===== PROJECTS =====
+const projects=[
+{name:"Project Hub",desc:"This dashboard — documents all projects, keys, and tokens",status:"running",port:3461,local:"http://localhost:3461",live:null,github:null,stack:"Node.js + Express, vanilla HTML/CSS/JS",notes:'Location: ~/clawd/dashboard-home/'},
+{name:"Observability Dashboard",desc:"Token usage tracking, daily task summaries, activity timeline from memory/ files",status:"running",port:3456,local:"http://localhost:3456",live:null,github:null,stack:"Node.js + Express, vanilla HTML/CSS/JS",notes:'Desktop: "Nole Dashboard.command". Location: ~/clawd/dashboard/'},
+{name:"Sales Outreach Dashboard",desc:"Campaign-based lead tracking, CSV export, email status tracking",status:"running",port:3457,local:"http://localhost:3457",live:null,github:null,stack:"Node.js + Express, vanilla HTML/CSS/JS",notes:'Desktop: "Sales Dashboard.command". Has "NVIDIA NYC Software Engineers" campaign (24 leads)'},
+{name:"Ideas Dashboard",desc:"Tags, Ideas, Links/Notes with VC investment memos, sentiment tracking, multi-tag support, global links feed",status:"running",port:3458,local:"http://localhost:3458",live:"https://vercel-deploy-alpha-orpin.vercel.app",github:null,stack:"Node.js + Express, vanilla HTML/CSS/JS",notes:'Desktop: "Ideas Dashboard.command". localStorage key ideas_v4 on Vercel'},
+{name:"AgentLive",desc:"AI Persona Streaming platform with desktop simulation, 8 agent profile cards, voice call integration",status:"running",port:3459,local:"http://localhost:3459",live:null,github:null,stack:"Node.js + Express + WebSocket, vanilla HTML/CSS/JS",notes:'Desktop: "AgentLive.command". Rich agent cards, call/chat buttons, simulated desktop'},
+{name:"OpenFlow",desc:"Open-source visual AI workflow builder (Flora.AI + Weavy.ai alternative). Node-based canvas with 32+ AI models (fal.ai)",status:"deployed",port:null,local:null,live:"https://web-five-smoky-69.vercel.app",github:"nikolateslasagent/openflow",stack:"React Flow + fal.ai",notes:"AGPL-3.0. Ref: nodetool-ai/nodetool. fal.ai API key hardcoded. Location: ~/clawd/nodetool-open/"},
+{name:"Voice Engine",desc:"Modular real-time voice module powered by NVIDIA PersonaPlex",status:"stopped",port:3460,local:"http://localhost:3460",live:null,github:null,stack:"Node.js + Express + WebSocket",notes:'Desktop: "Voice Engine.command". Needs RunPod A40 GPU pod + HuggingFace token'},
+{name:"LingBot World",desc:"Interactive world model with AI-generated worlds, WASD camera controls",status:"deployed",port:null,local:null,live:"https://frontend-green-rho-84.vercel.app",github:"nikolateslasagent/lingbot-runpod-worker",stack:"Vercel frontend + RunPod A100 backend",notes:"RunPod endpoint ds3xb2n1uvrwld. Docker: ghcr.io/nikolateslasagent/lingbot-runpod-worker:latest"},
+{name:"Agent Simulations Memo",desc:"Research memo on Simile/HumanLM for agent simulations",status:"deployed",port:null,local:null,live:null,github:null,stack:"Static / Vercel",notes:"Deep research deliverable"},
+];
+
+function renderProjects(){
+const f=(document.getElementById('search').value||'').toLowerCase();
+const filtered=projects.filter(p=>(p.name+p.desc+p.stack+p.notes).toLowerCase().includes(f));
+const running=projects.filter(p=>p.status==='running').length;
+const deployed=projects.filter(p=>p.status==='deployed').length;
+const repos=projects.filter(p=>p.github).length;
+document.getElementById('stats').innerHTML=
+[['Total Projects',projects.length],['Running',running],['Deployed',deployed],['GitHub Repos',repos]]
+.map(([l,n])=>`<div class="stat"><div class="num">${n}</div><div class="label">${l}</div></div>`).join('');
+document.getElementById('tbody').innerHTML=filtered.map(p=>{
+const sc=p.status==='running'?'running':p.status==='deployed'?'deployed':'stopped';
+const localLink=p.local?`<a href="${p.local}" class="mono">${p.local}</a>`:'—';
+const liveLink=p.live?`<a href="${p.live}" target="_blank" class="mono">${new URL(p.live).hostname}</a>`:'—';
+const ghLink=p.github?`<a href="https://github.com/${p.github}" target="_blank">${p.github}</a>`:'—';
+return `<tr>
+<td class="name">${p.name}</td><td>${p.desc}</td>
+<td><span class="badge badge-${sc}">${p.status.charAt(0).toUpperCase()+p.status.slice(1)}</span></td>
+<td>${localLink}</td><td>${liveLink}</td><td>${ghLink}</td>
+<td class="stack">${p.stack}</td><td class="notes">${p.notes}</td></tr>`;}).join('');
+}
+
+// ===== KEYS =====
+let keys = [];
+let revealedKeys = new Set();
+
+async function loadKeys() {
+  try {
+    const r = await fetch('/api/keys');
+    if (r.ok) { keys = await r.json(); }
+    else throw new Error('no api');
+  } catch(e) {
+    // Fallback to localStorage (Vercel / static hosting)
+    keys = JSON.parse(localStorage.getItem('hub_keys') || '[]');
+    if (keys.length === 0) {
+      // Seed defaults
+      keys = [
+        {id:'s1',name:'fal.ai API Key',service:'fal.ai',key:'148ec4ac-aafc-416b-9213-74cacdeefe5e:0dc2faa972e5762ba57fc758b2fd99e8',projects:['OpenFlow'],notes:'⚠️ Hardcoded in public repo',createdAt:'2026-02-15'},
+        {id:'s2',name:'Vercel Token',service:'Vercel',key:'',projects:['OpenFlow','Ideas Dashboard','LingBot World'],notes:'Account: hollyworld. Expires 5/14/26.',createdAt:'2026-02-13'},
+        {id:'s3',name:'RunPod API Key',service:'RunPod',key:'',projects:['LingBot World','Voice Engine'],notes:'Pod ymamku8yfkeqsu (A40)',createdAt:'2026-02-13'},
+        {id:'s4',name:'HuggingFace Token',service:'HuggingFace',key:'',projects:['Voice Engine'],notes:'Needs PersonaPlex license',createdAt:'2026-02-15'},
+        {id:'s5',name:'GitHub PAT',service:'GitHub',key:'',projects:['OpenFlow','LingBot World'],notes:'Account: nikolateslasagent',createdAt:'2026-02-15'},
+      ];
+      localStorage.setItem('hub_keys', JSON.stringify(keys));
+    }
+  }
+  renderKeys();
+}
+
+function renderKeys(){
+  const f=(document.getElementById('key-search').value||'').toLowerCase();
+  const filtered=keys.filter(k=>(k.name+k.service+k.notes+(k.projects||[]).join('')).toLowerCase().includes(f));
+  const services=[...new Set(keys.map(k=>k.service).filter(Boolean))];
+  document.getElementById('key-stats').innerHTML=
+  [['Total Keys',keys.length],['Services',services.length],['Linked Projects',[...new Set(keys.flatMap(k=>k.projects||[]))].length]]
+  .map(([l,n])=>`<div class="stat"><div class="num">${n}</div><div class="label">${l}</div></div>`).join('');
+
+  document.getElementById('keys-tbody').innerHTML=filtered.map(k=>{
+    const revealed=revealedKeys.has(k.id);
+    const maskedKey=k.key?(revealed?esc(k.key):(k.key.slice(0,8)+'•••'+k.key.slice(-4))):'—';
+    const projs=(k.projects||[]).map(p=>`<span class="key-project-tag">${esc(p)}</span>`).join('');
+    return `<tr>
+<td class="name">${esc(k.name)}</td>
+<td><span class="key-service">${esc(k.service)}</span></td>
+<td><span class="key-value ${revealed?'revealed':''}" onclick="toggleReveal('${k.id}')" title="Click to ${revealed?'hide':'reveal'}">${maskedKey}</span></td>
+<td><div class="key-projects">${projs||'—'}</div></td>
+<td class="notes">${esc(k.notes)}</td>
+<td><div class="row-actions">
+<button class="btn btn-secondary btn-sm" onclick="copyKey('${k.id}')">Copy</button>
+<button class="btn btn-secondary btn-sm" onclick="editKey('${k.id}')">Edit</button>
+<button class="btn btn-danger btn-sm" onclick="deleteKey('${k.id}')">Del</button>
+</div></td></tr>`;}).join('');
+}
+
+function toggleReveal(id){
+  if(revealedKeys.has(id)) revealedKeys.delete(id); else revealedKeys.add(id);
+  renderKeys();
+}
+
+function copyKey(id){
+  const k=keys.find(x=>x.id===id);
+  if(k) navigator.clipboard.writeText(k.key).then(()=>{ alert('Copied!'); });
+}
+
+function toggleAddForm(){
+  const form=document.getElementById('add-form');
+  form.classList.toggle('open');
+  if(!form.classList.contains('open')) clearForm();
+}
+
+function clearForm(){
+  document.getElementById('edit-id').value='';
+  document.getElementById('form-title').textContent='Add New Key';
+  ['f-name','f-service','f-key','f-projects','f-notes'].forEach(id=>document.getElementById(id).value='');
+}
+
+function editKey(id){
+  const k=keys.find(x=>x.id===id);
+  if(!k)return;
+  document.getElementById('edit-id').value=k.id;
+  document.getElementById('form-title').textContent='Edit Key';
+  document.getElementById('f-name').value=k.name;
+  document.getElementById('f-service').value=k.service;
+  document.getElementById('f-key').value=k.key;
+  document.getElementById('f-projects').value=(k.projects||[]).join(', ');
+  document.getElementById('f-notes').value=k.notes;
+  document.getElementById('add-form').classList.add('open');
+}
+
+async function saveKey(){
+  const editId=document.getElementById('edit-id').value;
+  const body={
+    name:document.getElementById('f-name').value,
+    service:document.getElementById('f-service').value,
+    key:document.getElementById('f-key').value,
+    projects:document.getElementById('f-projects').value.split(',').map(s=>s.trim()).filter(Boolean),
+    notes:document.getElementById('f-notes').value,
+  };
+  try {
+    if(editId){
+      const r = await fetch(`/api/keys/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      if(!r.ok) throw new Error();
+    } else {
+      const r = await fetch('/api/keys',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      if(!r.ok) throw new Error();
+    }
+  } catch(e) {
+    // localStorage fallback
+    if(editId){
+      const idx=keys.findIndex(k=>k.id===editId);
+      if(idx!==-1) keys[idx]={...keys[idx],...body};
+    } else {
+      body.id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      body.createdAt=new Date().toISOString();
+      keys.push(body);
+    }
+    localStorage.setItem('hub_keys',JSON.stringify(keys));
+  }
+  toggleAddForm();
+  loadKeys();
+}
+
+async function deleteKey(id){
+  if(!confirm('Delete this key?'))return;
+  try {
+    const r=await fetch(`/api/keys/${id}`,{method:'DELETE'});
+    if(!r.ok) throw new Error();
+  } catch(e) {
+    keys=keys.filter(k=>k.id!==id);
+    localStorage.setItem('hub_keys',JSON.stringify(keys));
+  }
+  loadKeys();
+}
+
+function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
+
+// ===== TABS =====
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab-content#tab-${tab}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Init
+renderProjects();
+loadKeys();
+</script>
+</body>
+</html>
